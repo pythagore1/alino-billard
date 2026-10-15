@@ -48,6 +48,15 @@ function MailIcon() {
   );
 }
 
+function PinIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11Z" />
+      <circle cx="12" cy="10" r="2.5" />
+    </svg>
+  );
+}
+
 function TruckIcon() {
   return (
     <svg {...iconProps}>
@@ -234,6 +243,16 @@ export default async function ContactPage() {
                 </span>
               </span>
             </Link>
+
+            <div className="flex items-start gap-4 rounded-xl border border-border bg-surface p-4">
+              <span className="mt-0.5 shrink-0 text-primary">
+                <PinIcon />
+              </span>
+              <span>
+                <span className="font-display block text-lg font-bold">Notre boutique</span>
+                <span className="block text-sm text-muted-foreground">Carrefour Jouvence, Yaoundé.</span>
+              </span>
+            </div>
 
             <div className="flex items-start gap-4 rounded-xl border border-border bg-surface p-4">
               <span className="mt-0.5 shrink-0 text-primary">

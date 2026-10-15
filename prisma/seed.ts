@@ -223,9 +223,9 @@ async function main() {
     await db.siteSettings.create({
       data: {
         storeName: "Alino Billard & Accessoires",
-        whatsappNumber: "+237600000000",
-        mtnNumber: "+237600000000",
-        orangeNumber: "+237690000000",
+        whatsappNumber: "+237698531311",
+        mtnNumber: "+237681504830",
+        orangeNumber: "+237698531311",
         contactEmail: "contact@alino-billard.com",
         currency: "XAF",
         taxEnabled: false,
