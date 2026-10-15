@@ -17,7 +17,7 @@ import { BannerBackground } from "@/components/shop/banner-background";
 
 export const metadata: Metadata = {
   title: "Boutique",
-  description: "Tous les produits de billard ALINO-Billard : queues, boules, procédés, accessoires.",
+  description: "Tous les produits de billard Alino Billard & Accessoires : queues, boules, procédés, accessoires.",
 };
 
 type SearchParams = Promise<{ q?: string; tri?: string; page?: string }>;
@@ -32,7 +32,7 @@ export default function CataloguePage({ searchParams }: { searchParams: SearchPa
       <section className="relative overflow-hidden text-ink-foreground">
         <BannerBackground photoUrl={bannerPhoto} priority />
         <div className="relative mx-auto max-w-7xl px-4 py-10 sm:py-14">
-          <span className="text-[13px] font-medium uppercase tracking-[0.18em] text-primary sm:text-lg">ALINOBILLARD</span>
+          <span className="text-[13px] font-medium uppercase tracking-[0.18em] text-primary sm:text-lg">ALINO BILLARD & ACCESSOIRES</span>
           <h1 className="font-display mt-2 text-3xl font-bold sm:text-4xl">La boutique</h1>
           <p className="mt-2 text-ink-foreground/80">Parcourez les produits et composez votre commande.</p>
         </div>

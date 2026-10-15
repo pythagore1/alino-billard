@@ -7,7 +7,7 @@ import { OWNER_NAME, OWNER_CITY } from "@/lib/seller";
 
 export const metadata: Metadata = {
   title: "Conditions générales de vente",
-  description: "Conditions générales de vente de ALINO-Billard : commande, paiement, livraison et suivi.",
+  description: "Conditions générales de vente de Alino Billard & Accessoires : commande, paiement, livraison et suivi.",
 };
 
 // À faire valider par un professionnel du droit avant de les considérer comme
@@ -198,7 +198,7 @@ export default async function TermsOfSalePage() {
         <BannerBackground photoUrl={bannerPhoto} priority />
         <div className="relative mx-auto max-w-7xl px-4 py-10 sm:py-14">
           <span className="text-[13px] font-medium uppercase tracking-[0.18em] text-primary sm:text-lg">
-            ALINOBILLARD
+            ALINO BILLARD & ACCESSOIRES
           </span>
           <h1 className="font-display mt-2 text-3xl font-bold sm:text-4xl">Conditions générales de vente</h1>
           <p className="mt-2 max-w-2xl text-ink-foreground/80">

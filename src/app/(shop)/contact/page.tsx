@@ -7,7 +7,7 @@ import { BannerBackground } from "@/components/shop/banner-background";
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Contactez ALINO-Billard par WhatsApp, téléphone ou e-mail pour une question sur un produit ou une commande.",
+    "Contactez Alino Billard & Accessoires par WhatsApp, téléphone ou e-mail pour une question sur un produit ou une commande.",
 };
 
 const iconProps = {
@@ -86,7 +86,7 @@ export default async function ContactPage() {
   const bannerPhoto = getBannerPhotoUrl("boutique");
 
   const whatsappHref = settings.whatsappNumber
-    ? `https://wa.me/${digits(settings.whatsappNumber)}?text=${encodeURIComponent("Bonjour ALINO-Billard, j'aimerais avoir des renseignements.")}`
+    ? `https://wa.me/${digits(settings.whatsappNumber)}?text=${encodeURIComponent("Bonjour Alino Billard & Accessoires, j'aimerais avoir des renseignements.")}`
     : null;
   const phoneHref = settings.contactPhone ? `tel:+${digits(settings.contactPhone)}` : null;
   const emailHref = settings.contactEmail ? `mailto:${settings.contactEmail}` : null;
@@ -137,7 +137,7 @@ export default async function ContactPage() {
         <BannerBackground photoUrl={bannerPhoto} priority />
         <div className="relative mx-auto max-w-7xl px-4 py-10 sm:py-14">
           <span className="text-[13px] font-medium uppercase tracking-[0.18em] text-primary sm:text-lg">
-            ALINOBILLARD
+            ALINO BILLARD & ACCESSOIRES
           </span>
           <h1 className="font-display mt-2 text-3xl font-bold sm:text-4xl">Contact</h1>
           <p className="mt-2 max-w-2xl text-ink-foreground/80">

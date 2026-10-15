@@ -1,4 +1,4 @@
-# ALINO-Billard
+# Alino Billard & Accessoires
 
 Boutique e-commerce premium spécialisée dans le pool américain (8-ball,
 9-ball, 10-ball) au Cameroun : catalogue dynamique, panier, commandes,

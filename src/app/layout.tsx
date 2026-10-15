@@ -20,8 +20,8 @@ const playfairDisplay = Playfair_Display({
 
 export const metadata: Metadata = {
   title: {
-    default: "ALINO-Billard — Boutique de billard premium au Cameroun",
-    template: "%s | ALINO-Billard",
+    default: "Alino Billard & Accessoires — Boutique de billard premium au Cameroun",
+    template: "%s | Alino Billard & Accessoires",
   },
   description:
     "Queues, boules, procédés et accessoires de billard (8-ball, 9-ball, 10-ball) — livraison au Cameroun.",

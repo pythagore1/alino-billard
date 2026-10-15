@@ -7,7 +7,7 @@ import { OWNER_NAME, OWNER_CITY } from "@/lib/seller";
 
 export const metadata: Metadata = {
   title: "Mentions légales",
-  description: "Mentions légales de ALINO-Billard : éditeur, hébergement, données personnelles.",
+  description: "Mentions légales de Alino Billard & Accessoires : éditeur, hébergement, données personnelles.",
 };
 
 const LAST_UPDATED = "9 octobre 2026";
@@ -96,7 +96,7 @@ export default async function LegalNoticePage() {
         <BannerBackground photoUrl={bannerPhoto} priority />
         <div className="relative mx-auto max-w-7xl px-4 py-10 sm:py-14">
           <span className="text-[13px] font-medium uppercase tracking-[0.18em] text-primary sm:text-lg">
-            ALINOBILLARD
+            ALINO BILLARD & ACCESSOIRES
           </span>
           <h1 className="font-display mt-2 text-3xl font-bold sm:text-4xl">Mentions légales</h1>
           <p className="mt-2 max-w-2xl text-ink-foreground/80">

@@ -7,7 +7,7 @@ import { BannerBackground } from "@/components/shop/banner-background";
 export const metadata: Metadata = {
   title: "Guide d'achat",
   description:
-    "Comment commander sur ALINO-Billard : choisir, payer par Mobile Money ou à la livraison, et suivre votre commande.",
+    "Comment commander sur Alino Billard & Accessoires : choisir, payer par Mobile Money ou à la livraison, et suivre votre commande.",
 };
 
 const linkClass = "text-primary hover:underline";
@@ -115,7 +115,7 @@ export default async function GuidePage() {
         <BannerBackground photoUrl={bannerPhoto} priority />
         <div className="relative mx-auto max-w-7xl px-4 py-10 sm:py-14">
           <span className="text-[13px] font-medium uppercase tracking-[0.18em] text-primary sm:text-lg">
-            ALINOBILLARD
+            ALINO BILLARD & ACCESSOIRES
           </span>
           <h1 className="font-display mt-2 text-3xl font-bold sm:text-4xl">Guide d&apos;achat</h1>
           <p className="mt-2 max-w-2xl text-ink-foreground/80">

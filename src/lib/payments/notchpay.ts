@@ -10,7 +10,7 @@ const NOTCHPAY_API_BASE = "https://api.notchpay.co";
  *
  * Flux retenu : paiement hébergé (POST /payments -> authorization_url), le
  * client est redirigé vers la page sécurisée NotchPay pour saisir son code
- * Mobile Money — ALINO-Billard ne manipule jamais de code PIN. Le paiement
+ * Mobile Money — Alino Billard & Accessoires ne manipule jamais de code PIN. Le paiement
  * n'est confirmé QUE côté serveur : vérification directe (GET /payments) au
  * retour du client ET webhook signé (jamais le frontend seul), conformément
  * au cahier des charges section 11.
@@ -39,7 +39,7 @@ class NotchPayProvider implements PaymentProvider {
         amount: input.amount,
         currency: input.currency,
         phone: input.customerPhone,
-        description: `Commande ${input.orderNumber} — ALINO-Billard`,
+        description: `Commande ${input.orderNumber} — Alino Billard & Accessoires`,
         reference: input.orderNumber,
         callback: `${process.env.NEXT_PUBLIC_SITE_URL}/commande/confirmation/${input.orderNumber}`,
         ...(input.channel ? { locked_channel: input.channel } : {}),

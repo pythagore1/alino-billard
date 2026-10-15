@@ -1,7 +1,7 @@
 import type { DefaultSession } from "next-auth";
 import type { Role } from "@/generated/prisma/enums";
 
-// Étend les types Auth.js pour exposer le rôle et l'id ALINO-Billard sur la
+// Étend les types Auth.js pour exposer le rôle et l'id Alino Billard & Accessoires sur la
 // session et le token JWT — nécessaire pour le contrôle d'accès admin/livreur.
 declare module "next-auth" {
   interface Session {

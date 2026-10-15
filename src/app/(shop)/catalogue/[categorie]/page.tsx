@@ -38,7 +38,7 @@ export async function generateMetadata({
   if (!category) return {};
   return {
     title: category.name,
-    description: `${category.name} — billard 8-ball, 9-ball, 10-ball chez ALINO-Billard.`,
+    description: `${category.name} — billard 8-ball, 9-ball, 10-ball chez Alino Billard & Accessoires.`,
   };
 }
 

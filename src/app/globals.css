@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /*
- * Palette officielle ALINO-Billard, extraite du logo (noir + or, boule 8).
+ * Palette officielle Alino Billard & Accessoires, extraite du logo (noir + or, boule 8).
  * Tout est centralisé ici en variables CSS : un seul endroit à modifier si
  * la charte évolue, jamais de couleurs codées en dur dans les composants.
  */

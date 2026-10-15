@@ -9,7 +9,7 @@ import { cloudinaryOptimized } from "@/lib/cloudinary-url";
 export const metadata: Metadata = {
   title: "Services",
   description:
-    "Installation de table, réparation de queue, changement de procédé... les services ALINO-Billard.",
+    "Installation de table, réparation de queue, changement de procédé... les services Alino Billard & Accessoires.",
 };
 
 const PRICING_LABELS: Record<string, string> = {

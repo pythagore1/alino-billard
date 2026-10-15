@@ -222,7 +222,7 @@ async function main() {
   if (!existingSettings) {
     await db.siteSettings.create({
       data: {
-        storeName: "ALINO-Billard",
+        storeName: "Alino Billard & Accessoires",
         whatsappNumber: "+237600000000",
         mtnNumber: "+237600000000",
         orangeNumber: "+237690000000",
@@ -245,7 +245,7 @@ async function main() {
     where: { email: adminEmail },
     update: {},
     create: {
-      name: "Super Admin ALINO-Billard",
+      name: "Super Admin Alino Billard & Accessoires",
       email: adminEmail,
       passwordHash,
       role: "SUPER_ADMIN",

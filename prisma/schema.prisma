@@ -1,4 +1,4 @@
-// ALINO-Billard — schéma de données
+// Alino Billard & Accessoires — schéma de données
 // Voir docs/DATA_MODEL.md pour le contexte métier de chaque entité.
 
 generator client {
@@ -625,7 +625,7 @@ model Media {
 model SiteSettings {
   id                    String  @id @default(cuid())
   logoUrl               String?
-  storeName             String  @default("ALINO-Billard")
+  storeName             String  @default("Alino Billard & Accessoires")
   whatsappNumber        String?
   mtnNumber             String?
   orangeNumber          String?

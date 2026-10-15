@@ -16,7 +16,7 @@ export function InscriptionForm() {
     return (
       <div className="mx-auto w-full max-w-md rounded-2xl border border-border bg-surface p-6 text-center shadow-sm">
         <h2 className="font-display text-2xl font-bold">Compte créé</h2>
-        <p className="mt-2 text-muted-foreground">Votre compte ALINO-Billard a été créé avec succès.</p>
+        <p className="mt-2 text-muted-foreground">Votre compte Alino Billard & Accessoires a été créé avec succès.</p>
         <Link
           href="/compte/connexion"
           className={`${primaryButtonClass} mt-5 flex min-h-12 items-center justify-center`}

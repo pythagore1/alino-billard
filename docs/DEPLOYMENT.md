@@ -1,4 +1,4 @@
-# Déploiement de ALINO-Billard
+# Déploiement de Alino Billard & Accessoires
 
 Guide complet pour passer du développement local à une mise en production
 réelle. Stack recommandée : **Vercel** (application) + **Neon**

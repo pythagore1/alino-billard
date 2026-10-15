@@ -28,7 +28,7 @@ async function AdminShell({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-surface-muted">
       <header className="flex items-center justify-between border-b border-border bg-surface px-6 py-4">
         <div>
-          <p className="font-semibold">ALINO-Billard — Administration</p>
+          <p className="font-semibold">Alino Billard & Accessoires — Administration</p>
           <p className="text-sm text-muted-foreground">
             {session.user.name} · {ROLE_LABELS[session.user.role] ?? session.user.role}
           </p>

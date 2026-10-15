@@ -60,7 +60,7 @@ export function ConnexionForm({ whatsappHref }: { whatsappHref: string | null })
         </p>
         {whatsappHref && (
           <a
-            href={`${whatsappHref}?text=${encodeURIComponent("Bonjour, j'ai oublié le mot de passe de mon compte ALINO-Billard.")}`}
+            href={`${whatsappHref}?text=${encodeURIComponent("Bonjour, j'ai oublié le mot de passe de mon compte Alino Billard & Accessoires.")}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex min-h-11 items-center font-medium text-primary hover:underline"

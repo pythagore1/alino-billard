@@ -10,11 +10,11 @@ self.addEventListener("push", (event) => {
   try {
     payload = event.data.json();
   } catch {
-    payload = { title: "ALINO-Billard", body: event.data.text() };
+    payload = { title: "Alino Billard & Accessoires", body: event.data.text() };
   }
 
   event.waitUntil(
-    self.registration.showNotification(payload.title || "ALINO-Billard", {
+    self.registration.showNotification(payload.title || "Alino Billard & Accessoires", {
       body: payload.body,
       icon: "/logo.png",
       badge: "/logo.png",
