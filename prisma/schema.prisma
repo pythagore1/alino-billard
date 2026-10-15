@@ -1,0 +1,642 @@
+// ALINO-Billard — schéma de données
+// Voir docs/DATA_MODEL.md pour le contexte métier de chaque entité.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Utilisateurs, rôles, audit
+// ---------------------------------------------------------------------------
+
+enum Role {
+  CUSTOMER
+  DELIVERY
+  ADMIN
+  SUPER_ADMIN
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  // Email optionnel : un client peut créer un compte avec juste son numéro
+  // (courant sur ce marché). Au moins l'un des deux est obligatoire, imposé
+  // par la validation applicative (registerSchema), pas par le schéma.
+  email        String?  @unique
+  phone        String?  @unique
+  passwordHash String
+  role         Role     @default(CUSTOMER)
+  isActive     Boolean  @default(true)
+  // Vrai juste après qu'un admin ait défini un mot de passe temporaire pour
+  // ce compte (réinitialisation assistée) — force le titulaire à en choisir
+  // un nouveau, que l'admin ne connaîtra jamais, avant tout accès au compte.
+  mustChangePassword Boolean @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  addresses         Address[]
+  orders            Order[]
+  serviceBookings   ServiceBooking[]
+  quoteRequests     QuoteRequest[]
+  auditLogs         AuditLog[]
+  deliveries        Delivery[]
+  carts             Cart[]
+  notifications     Notification[]
+  pushSubscriptions PushSubscription[]
+
+  @@index([role])
+}
+
+model Address {
+  id           String  @id @default(cuid())
+  userId       String
+  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label        String?
+  fullName     String
+  phone        String
+  city         String
+  neighborhood String?
+  details      String?
+  isDefault    Boolean @default(false)
+
+  @@index([userId])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action     String
+  entityType String
+  entityId   String?
+  before     Json?
+  after      Json?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Notifications (in-app + push navigateur) : admins, livreurs, clients
+// ---------------------------------------------------------------------------
+
+/** Enregistrement persistant, source de vérité pour la cloche de notifications. */
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String
+  url       String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, isRead])
+}
+
+/**
+ * Abonnement Web Push d'un navigateur/appareil précis pour un utilisateur —
+ * un même utilisateur peut avoir plusieurs abonnements (plusieurs appareils).
+ * Permet l'envoi même quand le site n'est pas ouvert (service worker).
+ */
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Catalogue : catégories, produits, variantes, médiathèque
+// ---------------------------------------------------------------------------
+
+model Category {
+  id       String     @id @default(cuid())
+  name     String
+  slug     String     @unique
+  parentId String?
+  parent   Category?  @relation("CategoryToSubcategories", fields: [parentId], references: [id], onDelete: SetNull)
+  children Category[] @relation("CategoryToSubcategories")
+  icon     String?
+  imageUrl String?
+  position Int        @default(0)
+  isActive Boolean    @default(true)
+
+  products Product[]
+
+  @@index([parentId])
+}
+
+enum Availability {
+  AVAILABLE
+  TO_CONFIRM
+  ON_ORDER
+  OUT_OF_STOCK
+  DISABLED
+}
+
+model Product {
+  id                    String       @id @default(cuid())
+  slug                  String       @unique
+  name                  String
+  shortDescription      String?
+  description           String?
+  price                 Int
+  compareAtPrice        Int?
+  promoPrice            Int?
+  promoStartsAt         DateTime?
+  promoEndsAt           DateTime?
+  sku                   String?      @unique
+  brand                 String?
+  model                 String?
+  categoryId            String
+  category              Category     @relation(fields: [categoryId], references: [id])
+  availability          Availability @default(TO_CONFIRM)
+  availabilityCheckedAt DateTime?
+  isFeatured            Boolean      @default(false)
+  isActive              Boolean      @default(true)
+  metaTitle             String?
+  metaDescription       String?
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+
+  images         ProductImage[]
+  variants       ProductVariant[]
+  attributes     ProductAttribute[]
+  priceTiers     ProductPriceTier[]
+  orderItems     OrderItem[]
+  cartItems      CartItem[]
+  promotionLinks PromotionProduct[]
+
+  @@index([categoryId])
+  @@index([isActive, isFeatured])
+  @@index([availability])
+}
+
+/**
+ * Tarif dégressif par quantité (ex: 12+ unités à 7000 FCFA/u). `Product.price`
+ * reste le prix de référence pour 1 unité ; ces paliers ne couvrent que les
+ * seuils supérieurs, appliqués au palier dont `minQuantity` est le plus élevé
+ * en restant <= à la quantité commandée (voir src/lib/pricing.ts).
+ */
+model ProductPriceTier {
+  id          String  @id @default(cuid())
+  productId   String
+  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  minQuantity Int
+  unitPrice   Int
+
+  @@unique([productId, minQuantity])
+  @@index([productId])
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  mediaId   String
+  media     Media   @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  position  Int     @default(0)
+  isPrimary Boolean @default(false)
+
+  @@index([productId])
+}
+
+model ProductVariant {
+  id           String        @id @default(cuid())
+  productId    String
+  product      Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  label        String
+  value        String
+  priceDelta   Int           @default(0)
+  skuSuffix    String?
+  availability Availability?
+
+  @@index([productId])
+}
+
+model ProductAttribute {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name      String
+  value     String
+
+  @@index([productId])
+}
+
+// ---------------------------------------------------------------------------
+// Services (prestations) : réservation et devis
+// ---------------------------------------------------------------------------
+
+enum ServicePricingType {
+  FIXED
+  STARTING_AT
+  QUOTE_ONLY
+}
+
+model Service {
+  id               String             @id @default(cuid())
+  slug             String             @unique
+  name             String
+  description      String?
+  pricingType      ServicePricingType @default(FIXED)
+  price            Int?
+  durationEstimate String?
+  interventionZone String?
+  isBookable       Boolean            @default(true)
+  isQuotable       Boolean            @default(true)
+  isActive         Boolean            @default(true)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  images   ServiceImage[]
+  bookings ServiceBooking[]
+  quotes   QuoteRequest[]
+}
+
+model ServiceImage {
+  id        String  @id @default(cuid())
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  mediaId   String
+  media     Media   @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  position  Int     @default(0)
+  isPrimary Boolean @default(false)
+
+  @@index([serviceId])
+}
+
+enum ServiceBookingStatus {
+  REQUESTED
+  CONFIRMED
+  DONE
+  CANCELLED
+}
+
+model ServiceBooking {
+  id            String               @id @default(cuid())
+  serviceId     String
+  service       Service              @relation(fields: [serviceId], references: [id])
+  customerId    String?
+  customer      User?                @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  guestName     String
+  guestPhone    String
+  address       String
+  requestedSlot DateTime?
+  status        ServiceBookingStatus @default(REQUESTED)
+  notes         String?
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  @@index([serviceId])
+  @@index([customerId])
+  @@index([status])
+}
+
+enum QuoteRequestStatus {
+  PENDING
+  QUOTED
+  ACCEPTED
+  REJECTED
+}
+
+model QuoteRequest {
+  id          String             @id @default(cuid())
+  serviceId   String
+  service     Service            @relation(fields: [serviceId], references: [id])
+  customerId  String?
+  customer    User?              @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  guestName   String
+  guestPhone  String
+  description String
+  status      QuoteRequestStatus @default(PENDING)
+  quotedPrice Int?
+  adminNotes  String?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@index([serviceId])
+  @@index([customerId])
+  @@index([status])
+}
+
+// ---------------------------------------------------------------------------
+// Panier
+// ---------------------------------------------------------------------------
+
+model Cart {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items CartItem[]
+
+  @@index([userId])
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  variantId String?
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+
+  @@index([cartId])
+  @@index([productId])
+}
+
+// ---------------------------------------------------------------------------
+// Livraison
+// ---------------------------------------------------------------------------
+
+enum DeliveryMethodType {
+  STANDARD
+  EXPRESS
+  PICKUP
+  // Hors Yaoundé : pas de zone/tarif dédié, frais calculés en % de la
+  // commande (SiteSettings.expeditionFeePercent) — voir createOrder().
+  EXPEDITION
+}
+
+model DeliveryZone {
+  id       String  @id @default(cuid())
+  name     String
+  isActive Boolean @default(true)
+
+  rates  ShippingRate[]
+  orders Order[]
+}
+
+model ShippingRate {
+  id        String             @id @default(cuid())
+  zoneId    String
+  zone      DeliveryZone       @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  method    DeliveryMethodType
+  price     Int
+  freeAbove Int?
+
+  @@index([zoneId])
+}
+
+enum DeliveryStatus {
+  PENDING
+  ASSIGNED
+  PICKED_UP
+  IN_TRANSIT
+  DELIVERED
+  FAILED
+}
+
+model Delivery {
+  id           String         @id @default(cuid())
+  orderId      String         @unique
+  order        Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  assignedToId String?
+  assignedTo   User?          @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
+  status       DeliveryStatus @default(PENDING)
+  deliveredAt  DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([assignedToId])
+  @@index([status])
+}
+
+// ---------------------------------------------------------------------------
+// Commandes, paiements
+// ---------------------------------------------------------------------------
+
+enum OrderStatus {
+  NEW
+  AWAITING_CONFIRMATION
+  CHECKING_AVAILABILITY
+  CONFIRMED
+  PREPARING
+  READY
+  SHIPPING
+  DELIVERED
+  CANCELLED
+  FAILED
+}
+
+enum OrderPaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum PaymentMethodType {
+  NOTCHPAY_MTN
+  NOTCHPAY_ORANGE
+  CASH_ON_DELIVERY
+}
+
+model Order {
+  id             String             @id @default(cuid())
+  orderNumber    String             @unique
+  // Compteur séquentiel pour la référence courte affichée au client
+  // (RB-0142, voir lib/order-reference.ts) — orderNumber reste le jeton long
+  // utilisé dans les URLs publiques (confirmation, factures), jamais exposé
+  // en clair comme "identifiant à retenir" par le client.
+  sequenceNumber Int                @unique @default(autoincrement())
+  customerId     String?
+  customer       User?              @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  guestName      String
+  guestPhone     String
+  subtotal       Int
+  shippingFee    Int                @default(0)
+  discountAmount Int                @default(0)
+  total          Int
+  deliveryZoneId String?
+  deliveryZone   DeliveryZone?      @relation(fields: [deliveryZoneId], references: [id])
+  region         String
+  city           String
+  // Nommé "address" historiquement mais ne contient que le quartier/repère
+  // (la rue n'existe pas en adressage au Cameroun) — jamais renommé en base
+  // pour éviter une migration sans valeur ajoutée.
+  address        String
+  deliveryMethod DeliveryMethodType @default(STANDARD)
+  paymentMethod  PaymentMethodType
+  paymentStatus  OrderPaymentStatus @default(PENDING)
+  orderStatus    OrderStatus        @default(NEW)
+  notes          String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  items         OrderItem[]
+  payments      Payment[]
+  delivery      Delivery?
+  statusHistory OrderStatusHistory[]
+  promotion     Promotion?           @relation(fields: [promotionId], references: [id])
+  promotionId   String?
+
+  @@index([customerId])
+  @@index([orderStatus])
+  @@index([paymentStatus])
+}
+
+model OrderItem {
+  id           String  @id @default(cuid())
+  orderId      String
+  order        Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId    String
+  product      Product @relation(fields: [productId], references: [id])
+  productName  String
+  variantLabel String?
+  unitPrice    Int
+  quantity     Int
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model OrderStatusHistory {
+  id         String       @id @default(cuid())
+  orderId    String
+  order      Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fromStatus OrderStatus?
+  toStatus   OrderStatus
+  changedBy  String?
+  createdAt  DateTime     @default(now())
+
+  @@index([orderId])
+}
+
+enum PaymentProviderType {
+  NOTCHPAY
+  MONETBIL
+  CASH_ON_DELIVERY
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  CANCELLED
+}
+
+model Payment {
+  id                String              @id @default(cuid())
+  orderId           String
+  order             Order               @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  provider          PaymentProviderType
+  providerReference String              @unique
+  amount            Int
+  currency          String              @default("XAF")
+  status            PaymentStatus       @default(PENDING)
+  rawPayload        Json?
+  createdAt         DateTime            @default(now())
+  confirmedAt       DateTime?
+
+  @@index([orderId])
+  @@index([status])
+}
+
+// ---------------------------------------------------------------------------
+// Promotions
+// ---------------------------------------------------------------------------
+
+model Promotion {
+  id            String    @id @default(cuid())
+  name          String
+  code          String?   @unique
+  discountType  String // PERCENTAGE | FIXED_AMOUNT
+  discountValue Int
+  startsAt      DateTime?
+  endsAt        DateTime?
+  isActive      Boolean   @default(true)
+
+  products PromotionProduct[]
+  orders   Order[]
+}
+
+model PromotionProduct {
+  id          String    @id @default(cuid())
+  promotionId String
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([promotionId, productId])
+}
+
+// ---------------------------------------------------------------------------
+// Médiathèque
+// ---------------------------------------------------------------------------
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+model MediaFolder {
+  id       String        @id @default(cuid())
+  name     String
+  parentId String?
+  parent   MediaFolder?  @relation("MediaFolderToChildren", fields: [parentId], references: [id], onDelete: SetNull)
+  children MediaFolder[] @relation("MediaFolderToChildren")
+
+  media Media[]
+
+  @@index([parentId])
+}
+
+model Media {
+  id        String       @id @default(cuid())
+  folderId  String?
+  folder    MediaFolder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  type      MediaType
+  url       String
+  publicId  String       @unique
+  altText   String?
+  width     Int?
+  height    Int?
+  duration  Int?
+  createdAt DateTime     @default(now())
+
+  productImages ProductImage[]
+  serviceImages ServiceImage[]
+
+  @@index([folderId])
+}
+
+// ---------------------------------------------------------------------------
+// Paramètres boutique
+// ---------------------------------------------------------------------------
+
+model SiteSettings {
+  id                    String  @id @default(cuid())
+  logoUrl               String?
+  storeName             String  @default("ALINO-Billard")
+  whatsappNumber        String?
+  mtnNumber             String?
+  orangeNumber          String?
+  contactEmail          String?
+  contactPhone          String?
+  socialLinks           Json?
+  taxEnabled            Boolean @default(false)
+  taxRate               Float   @default(19.25)
+  currency              String  @default("XAF")
+  freeShippingThreshold Int?
+  // Frais de livraison hors Yaoundé ("Expédition"), en % du sous-total de
+  // la commande — pas de zone/tarif dédié pour ces villes.
+  expeditionFeePercent  Float   @default(10)
+}

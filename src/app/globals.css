@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+/*
+ * Palette officielle ALINO-Billard, extraite du logo (noir + or, boule 8).
+ * Tout est centralisé ici en variables CSS : un seul endroit à modifier si
+ * la charte évolue, jamais de couleurs codées en dur dans les composants.
+ */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+
+  --color-surface: #ffffff;
+  --color-surface-muted: #f5f5f4;
+  --color-border: #e5e5e4;
+  --color-muted-foreground: #6b6b68;
+
+  --color-primary: #d4a017; /* or du logo — CTA, liens, accents */
+  --color-primary-hover: #b8860b;
+  --color-primary-foreground: #171717; /* texte sombre sur fond doré : meilleur contraste que du blanc */
+
+  --color-accent: #e0b02c; /* variante dorée plus claire, badges/highlights */
+  --color-accent-foreground: #171717;
+
+  --color-ink: #0a0a0a; /* noir du logo — header, footer, sections hero */
+  --color-ink-foreground: #f5f5f4;
+
+  /* Thème boutique (section (shop) uniquement, voir .shop-theme plus bas) :
+     fond ivoire + vert billard en accent, en plus du noir/or existant. */
+  --color-cream: #f7f2e7;
+  --color-cream-muted: #efe7d6;
+  --color-forest: #163d2c;
+  --color-forest-light: #1f5940;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--color-surface);
+  --color-surface-muted: var(--color-surface-muted);
+  --color-border: var(--color-border);
+  --color-muted-foreground: var(--color-muted-foreground);
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-foreground: var(--color-primary-foreground);
+  --color-accent: var(--color-accent);
+  --color-accent-foreground: var(--color-accent-foreground);
+  --color-ink: var(--color-ink);
+  --color-ink-foreground: var(--color-ink-foreground);
+  --color-cream: var(--color-cream);
+  --color-cream-muted: var(--color-cream-muted);
+  --color-forest: var(--color-forest);
+  --color-forest-light: var(--color-forest-light);
+  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-playfair);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    --color-surface: #171717;
+    --color-surface-muted: #1f1f1e;
+    --color-border: #2c2c2b;
+    --color-muted-foreground: #a1a19d;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Thème des pages boutique publiques — l'admin garde le fond blanc/sans-serif
+   utilitaire, seule la section (shop) passe au crème + serif. */
+.shop-theme {
+  background: var(--color-cream);
+  color: var(--color-ink);
+}
+
+.shop-theme h1,
+.shop-theme h2,
+.shop-theme h3 {
+  font-family: var(--font-display), Georgia, serif;
+}
+
+/* Fiche produit sur mobile : la barre "Ajouter au panier" est collée au-dessus
+   de la navigation du bas ; la fiche a déjà son propre lien WhatsApp, donc
+   l'icône flottante est masquée pour ne pas la chevaucher. */
+@media (max-width: 639px) {
+  body:has([data-sticky-cart]) .wa-fab {
+    display: none;
+  }
+}
