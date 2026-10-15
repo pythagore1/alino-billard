@@ -52,3 +52,6 @@ next-env.d.ts
 
 # catalogue client (Word/PDF) généré localement — document commercial, pas du code
 /Catalogue/
+
+.vercel
+.env*
