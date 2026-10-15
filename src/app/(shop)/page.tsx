@@ -153,7 +153,7 @@ export default async function HomePage() {
             des sections qui restent centrées avec une marge égale. */}
         <div className="relative flex max-w-7xl flex-col items-start gap-4 px-4 py-9 sm:gap-5 sm:py-24 lg:pr-6 lg:pl-28">
           <span className="text-[13px] font-medium uppercase tracking-[0.18em] text-primary sm:text-lg">
-            {settings.storeName.toUpperCase().replace(/[\s-]/g, "")} · Équipement & accessoires
+            {settings.storeName.toUpperCase()}
           </span>
           <h1 className="font-display max-w-2xl text-3xl leading-tight font-bold sm:text-5xl">
             Plus qu&apos;un jeu,

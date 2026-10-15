@@ -55,7 +55,7 @@ export async function SiteHeader() {
               />
             ) : null}
             <span className="font-display text-sm font-bold tracking-wide whitespace-nowrap text-primary sm:text-lg">
-              {settings.storeName.toUpperCase().replace(/[\s-]/g, "")}
+              {settings.storeName.toUpperCase()}
             </span>
           </Link>
         </div>
