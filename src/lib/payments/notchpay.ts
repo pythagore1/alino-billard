@@ -42,7 +42,10 @@ class NotchPayProvider implements PaymentProvider {
         description: `Commande ${input.orderNumber} — Alino Billard & Accessoires`,
         reference: input.orderNumber,
         callback: `${process.env.NEXT_PUBLIC_SITE_URL}/commande/confirmation/${input.orderNumber}`,
-        ...(input.channel ? { locked_channel: input.channel } : {}),
+        // Présélection (et non "locked_channel") : NotchPay refuse un canal imposé
+        // en sandbox ("Moyen de paiement indisponible") alors que la présélection
+        // affiche normalement le formulaire Mobile Money.
+        ...(input.channel ? { channel: input.channel } : {}),
       }),
     });
 
