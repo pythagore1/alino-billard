@@ -10,7 +10,8 @@ import { productSchema, priceTierSchema, type PriceTierInput } from "@/lib/valid
 import { actionError, actionSuccess, BusinessError, type ActionResult } from "@/lib/errors";
 import type { Availability } from "@/generated/prisma/enums";
 
-const CAN_MANAGE_CATALOG = ["ADMIN", "SUPER_ADMIN"] as const;
+// Démo ALINO : le catalogue est réservé au SUPER_ADMIN (maintenance). Les ADMIN ne gèrent que les commandes.
+const CAN_MANAGE_CATALOG = ["SUPER_ADMIN"] as const;
 
 export type ProductAdminSort =
   | "updated_desc"

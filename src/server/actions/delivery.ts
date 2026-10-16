@@ -7,7 +7,8 @@ import { logAudit } from "@/lib/audit";
 import { deliveryZoneSchema, shippingRateSchema } from "@/lib/validation/delivery";
 import { actionError, actionSuccess, BusinessError, type ActionResult } from "@/lib/errors";
 
-const CAN_MANAGE_DELIVERY = ["ADMIN", "SUPER_ADMIN"] as const;
+// Zones et tarifs de livraison : réservés au SUPER_ADMIN (maintenance).
+const CAN_MANAGE_DELIVERY = ["SUPER_ADMIN"] as const;
 
 export async function listZonesForAdmin() {
   await requireRole([...CAN_MANAGE_DELIVERY]);

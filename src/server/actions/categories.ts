@@ -10,7 +10,8 @@ import { categorySchema } from "@/lib/validation/catalog";
 import { sortCategoriesHierarchically } from "@/lib/category-tree";
 import { actionError, actionSuccess, BusinessError, type ActionResult } from "@/lib/errors";
 
-const CAN_MANAGE_CATALOG = ["ADMIN", "SUPER_ADMIN"] as const;
+// Démo ALINO : le catalogue est réservé au SUPER_ADMIN (maintenance). Les ADMIN ne gèrent que les commandes.
+const CAN_MANAGE_CATALOG = ["SUPER_ADMIN"] as const;
 
 export type CategoryAdminSort = "hierarchy" | "name_asc" | "name_desc" | "products_desc";
 

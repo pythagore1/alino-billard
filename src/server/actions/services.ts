@@ -15,7 +15,8 @@ import {
 import { checkPublicActionRateLimit, getClientIp } from "@/lib/rate-limit";
 import { actionError, actionSuccess, type ActionResult } from "@/lib/errors";
 
-const CAN_MANAGE_CATALOG = ["ADMIN", "SUPER_ADMIN"] as const;
+// Démo ALINO : le catalogue est réservé au SUPER_ADMIN (maintenance). Les ADMIN ne gèrent que les commandes.
+const CAN_MANAGE_CATALOG = ["SUPER_ADMIN"] as const;
 
 // --- Lecture publique (boutique) ---------------------------------------
 
